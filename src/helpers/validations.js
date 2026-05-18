@@ -83,4 +83,6 @@ export const validateRegisterUser = (req) => {
             message: "La contraseña debe tener al menos 7 caracteres, una mayúscula y un número."
         }
     }
+
+    return result;
 }

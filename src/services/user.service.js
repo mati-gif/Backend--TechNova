@@ -3,6 +3,8 @@ import { Role } from "../models/Role/Role.js";
 import { validateLoginUser, validateRegisterUser } from "../helpers/validations.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import { NOW } from "sequelize";
+import {validateEmail} from  "../helpers/validateEmail.js"
 
 export const registerUser = async (req, res) => {
 
@@ -19,7 +21,22 @@ export const registerUser = async (req, res) => {
     })
 
     if (user)
-        return res.status(400).json({ message: "Usuario ya existe" });
+        return res.status(400).json({ message: "El usuario ya existe" });
+
+    let roleNameToFind = validateEmail(email)
+
+    let existsRoleEntity = await Role.findOne({
+        where:{
+            name:roleNameToFind.toUpperCase()
+        }
+    })
+    if (!existsRoleEntity) {
+            return res.status(404).json({ message: "Error interno: El rol especificado no existe en el sistema." });
+        }
+
+    console.log(`el rol encontrado es: ${roleNameToFind}`);
+
+    
 
     const saltRound = 10;
 
@@ -32,7 +49,10 @@ export const registerUser = async (req, res) => {
     const newUser = await User.create({
         name,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        roleId:existsRoleEntity.id,
+        creationDate: new Date(),
+        modificationDate:new Date()
     });
 
     res.json(newUser.id);
@@ -69,7 +89,7 @@ export const loginUser = async (req, res) => {
         id : user.id,
         name:user.name,
         email:email,
-        role:user.Role.name
+        role:user.role.name.toLowerCase()
     }
 
     const token = jwt.sign(payload, secretKey, { expiresIn: "1h" })
