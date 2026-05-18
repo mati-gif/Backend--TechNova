@@ -1,6 +1,7 @@
 import express from "express";
 import { sequelize } from "../db.js";
 import "./models/relations/relations.js"
+import userRoutes from "./routes/user.routes.js"
 
 
 const app = express();
@@ -17,6 +18,7 @@ try{
     })
     
     app.listen(port)
+    app.use(userRoutes)
 
     console.log(`app escuchando el puerto ${port}`);
     await sequelize.sync();

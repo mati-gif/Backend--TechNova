@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../../../db.js";
 
 
-export const Role = sequelize.define("Role", {
+export const Role = sequelize.define("role", {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
