@@ -36,8 +36,6 @@ export const registerUser = async (req, res) => {
 
     console.log(`el rol encontrado es: ${roleNameToFind}`);
 
-    
-
     const saltRound = 10;
 
     const salt = await bcrypt.genSalt(saltRound);
@@ -55,7 +53,7 @@ export const registerUser = async (req, res) => {
         modificationDate:new Date()
     });
 
-    res.json(newUser.id);
+    res.status(201).json({ message:"Usuario registrado exitosamente",id: newUser.id })
 
 }
 
@@ -81,7 +79,7 @@ export const loginUser = async (req, res) => {
     const comparison = await bcrypt.compare(password, user.password);
 
     if (!comparison)
-        return res.status(401).json({ message: "Error en las credenciales" });
+        return res.status(401).json({ message: "Error en la contraseña" });
 
     const secretKey = "programacion3-1C-2026-techNova";
 
@@ -94,6 +92,8 @@ export const loginUser = async (req, res) => {
 
     const token = jwt.sign(payload, secretKey, { expiresIn: "1h" })
 
-    return res.json({ token })
+    // return res.json({ token })
+    return res.status(200).json({message:"Usuario logueado exitosamente",token:token})
+
 
 }
