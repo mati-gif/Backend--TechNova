@@ -74,7 +74,7 @@ export const loginUser = async (req, res) => {
     })
 
     if (!user)
-        return res.status(401).json({ message: "Error en las credenciales" });
+        return res.status(401).json({ message: "El usuario no existe, registrate para acceder" });
 
     const comparison = await bcrypt.compare(password, user.password);
 
