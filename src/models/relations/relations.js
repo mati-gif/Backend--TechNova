@@ -18,13 +18,20 @@ User.hasMany(Order, { foreignKey: 'userId' });
 Order.belongsTo(User, { foreignKey: 'userId' });
 
 // ==========================================
-// 3. Relación: Órdenes y Dirección de Envío (1 a 1)
+// 3. Relación:  Dirección de Envío y Órdenes (1 a N)
 // ==========================================
-Order.hasOne(ShippingAddress, { foreignKey: 'orderId' });
-ShippingAddress.belongsTo(Order, { foreignKey: 'orderId' });
+ShippingAddress.hasMany(Order,{foreignKey:'shippingAddressId'})
+Order.belongsTo(ShippingAddress,{foreignKey:'shippingAddressId'})
+
 
 // ==========================================
-// 4. Relación: Órdenes y Productos (N a N)
+// 4. Relación:  Usuario y Ordenes de envio (1 a N)
+// ==========================================
+User.hasMany(ShippingAddress,{foreignKey:'userId'})
+ShippingAddress.belongsTo(User,{foreignKey:'userId'})
+
+// ==========================================
+// 6. Relación: Órdenes y Productos (N a N)
 // ==========================================
 Order.belongsToMany(Product, { through: OrderProduct, foreignKey: 'orderId' });
 Product.belongsToMany(Order, { through: OrderProduct, foreignKey: 'productId' });
