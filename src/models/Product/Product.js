@@ -74,6 +74,10 @@ export const Product = sequelize.define("product", {
         set(value) {
             this.setDataValue('features', JSON.stringify(value));
         }
+    },
+    isActive:{
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
     }
 }, {
     timestamps: false
