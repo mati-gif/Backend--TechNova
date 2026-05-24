@@ -30,6 +30,8 @@ export const findById = async (req, res) => {
 
             return res.status(404).send({ message: "No se encontro el producto solicitado" })
         }
+
+        return res.status(200).json(product);
     } catch (error) {
         console.error(error);
 
@@ -51,9 +53,16 @@ export const createNewProduct = async (req, res) => {
         if (existProduct) {
             console.log("Actualizando el stock de un producto existente");
 
+            console.log("stock actual del producto",existProduct.stock);
+            
             existProduct.stock = existProduct.stock + product.stock;
 
+            console.log("stock actualizado del producto ",existProduct.stock);
+            
             await existProduct.save();
+
+            console.log("stock actualizado del producto ",existProduct.stock);
+
             return res.status(200).json(existProduct);
 
         }
