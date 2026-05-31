@@ -96,4 +96,25 @@ export const loginUser = async (req, res) => {
     return res.status(200).json({message:"Usuario logueado exitosamente",token:token})
 
 
+};
+
+export const retrieveAllUsers = async (req, res) =>{
+        try {
+            
+            const users = await User.findAll({
+                include: {
+                    model:Role
+                }
+            });
+    
+            if (!users || users.length === 0) {
+                return res.status(404).json({ message: "No se encontraron usuarios" });
+            }
+            return res.status(200).json(users);
+    
+        } catch (error) {
+            console.error(error);
+    
+            res.status(500).send({ message: "Ocurrio un error al traer los usuarios" })
+        }
 }
