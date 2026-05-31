@@ -32,10 +32,6 @@ export const Product = sequelize.define("product", {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: true,
     },
-    category: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
     subcategory: {
         type: DataTypes.STRING,
         allowNull: true,
