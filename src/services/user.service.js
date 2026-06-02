@@ -1,6 +1,6 @@
 import { User } from "../models/User/User.js";
 import { Role } from "../models/Role/Role.js";
-import { validateLoginUser, validateRegisterUser } from "../helpers/validations.js";
+import { validateLoginUser, validateOnlyPassword, validateRegisterUser } from "../helpers/validations.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { NOW } from "sequelize";
@@ -171,12 +171,12 @@ export const changeUserRole = async (req, res) => {
             return res.status(404).json({ message: `El rol '${roleName}' no existe en el sistema.` });
         }
 
-        console.log("id del usuario",id);
-        
+        console.log("id del usuario", id);
+
         // 3. Buscar al usuario
         const user = await User.findByPk(id);
         console.log(user);
-        
+
         if (!user) {
             return res.status(404).json({ message: "Usuario no encontrado." });
         }
@@ -201,17 +201,12 @@ export const changeUserRole = async (req, res) => {
 export const changeUserPassword = async (req, res) => {
     try {
         const { id } = req.params; // ID del usuario a modificar
-        console.log("esto es lo que viene en el body",req.body);
-        
         const { newPassword } = req.body;
-
-        // 1. Validaciones básicas de la nueva contraseña
-        if (!newPassword || typeof newPassword !== 'string' || newPassword.trim() === '') {
-            return res.status(400).json({ message: "La nueva contraseña no puede estar vacía." });
-        }
-
-        if (newPassword.length < 6) { // Puedes ajustar el largo mínimo si lo deseas
-            return res.status(400).json({ message: "La contraseña debe tener al menos 6 caracteres." });
+        const result = validateOnlyPassword(newPassword)
+        console.log(result);
+        
+        if (result.error) {
+            return res.status(400).send({ message: result.message })
         }
 
         // 2. Buscar si el usuario existe
