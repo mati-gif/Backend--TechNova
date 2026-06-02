@@ -1,3 +1,4 @@
+import { validateProduct } from "../helpers/validateProduct.js";
 import { Product } from "../models/Product/Product.js"
 
 export const retrieveAllProducts = async (req, res) => {
@@ -76,3 +77,70 @@ export const createNewProduct = async (req, res) => {
         return res.status(500).send({ message: "Ocurrió un error al crear el producto", error: error.message });
     }
 }
+
+export const updateProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const dataToUpdate = req.body;
+
+        //  Ejecutamos la validación
+        const errorMessage = validateProduct(req);
+
+        //  Si errorMessage tiene un texto (no es null), frenamos el controlador acá
+        if (errorMessage) {
+            return res.status(400).json({ message: errorMessage });
+        }
+
+        // 1. Buscamos si el producto existe
+        const product = await Product.findByPk(id);
+
+        if (!product) {
+            console.log(`No se encontró el producto con el id ${id} para actualizar`);
+            return res.status(404).json({ message: "No se encontró el producto solicitado" });
+        }
+
+        // 2. Actualizamos el producto con los datos que vienen del body
+        await product.update(dataToUpdate);
+
+        console.log(`Producto con ID ${id} actualizado exitosamente`);
+        return res.status(200).json(product.id);
+
+    } catch (error) {
+        console.error("Error en updateProduct:", error);
+        return res.status(500).json({ 
+            message: "Ocurrió un error al actualizar el producto", 
+            error: error.message 
+        });
+    }
+};
+
+
+export const deleteAProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // 1. Buscamos si el producto existe
+        const product = await Product.findByPk(id);
+
+        if (!product) {
+            console.log(`No se encontró el producto con el id ${id} para dar de baja`);
+            return res.status(404).json({ message: "No se encontró el producto solicitado" });
+        }
+
+        // 2. Aplicamos la baja lógica cambiando el flag 'isActive' a false
+        await product.update({ isActive: false });
+
+        console.log(`Baja lógica aplicada al producto con ID ${id}`);
+        return res.status(200).json({ 
+            message: "Producto dado de baja exitosamente", 
+            productId: id 
+        });
+
+    } catch (error) {
+        console.error("Error en deleteAProduct:", error);
+        return res.status(500).json({ 
+            message: "Ocurrió un error al intentar dar de baja el producto", 
+            error: error.message 
+        });
+    }
+};
