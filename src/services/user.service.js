@@ -67,12 +67,13 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({
-        where: { email },
+        where: { email ,active:true},
         include: {
             model: Role
         }
     })
 
+    console.log("usuario activo",user);
     if (!user)
         return res.status(401).json({ message: "El usuario no existe, registrate para acceder" });
 
@@ -102,14 +103,17 @@ export const retrieveAllUsers = async (req, res) => {
     try {
 
         const users = await User.findAll({
+            where:{active:true},
             include: {
                 model: Role
             }
         });
+        
 
         if (!users || users.length === 0) {
             return res.status(404).json({ message: "No se encontraron usuarios" });
         }
+
         return res.status(200).json(users);
 
     } catch (error) {
@@ -151,7 +155,6 @@ export const deleteUser = async (req, res) => {
 };
 
 //cambiar role del usuario 
-
 export const changeUserRole = async (req, res) => {
     try {
         const { id } = req.params; // El ID del usuario que viene en la URL
