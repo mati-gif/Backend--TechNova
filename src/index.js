@@ -4,6 +4,7 @@ import "./models/relations/relations.js"
 import userRoutes from "./routes/user.routes.js"
 import productRoutes from "./routes/product.routes.js"
 import categoryRoutes from "./routes/category.routes.js"
+import shippingAddress from "./routes/shippingAddress.routes.js"
 
 
 const app = express();
@@ -23,6 +24,7 @@ try{
     app.use(productRoutes);
     app.use(userRoutes)
     app.use(categoryRoutes)
+    app.use(shippingAddress)
     
     console.log(`app escuchando el puerto ${port}`);
     await sequelize.sync();
