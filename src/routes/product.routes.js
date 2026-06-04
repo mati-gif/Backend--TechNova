@@ -6,8 +6,8 @@ import {verifyToken } from "../middleware/auth.js"
 const router = Router();
 
 
-router.get("/product/all",verifyToken,retrieveAllProducts)
-router.get(`/product/:id`,verifyToken,findById)
+router.get("/product/all",retrieveAllProducts)
+router.get(`/product/:id`,findById)
 router.post("/create",verifyToken,createNewProduct)
 router.put(`/update/:id`,verifyToken,updateProduct)
 router.put(`/delete/:id`,verifyToken,deleteAProduct)

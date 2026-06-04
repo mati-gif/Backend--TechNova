@@ -67,12 +67,13 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({
-        where: { email },
+        where: { email ,active:true},
         include: {
             model: Role
         }
     })
 
+    console.log("usuario activo",user);
     if (!user)
         return res.status(401).json({ message: "El usuario no existe, registrate para acceder" });
 
@@ -102,14 +103,17 @@ export const retrieveAllUsers = async (req, res) => {
     try {
 
         const users = await User.findAll({
+            where:{active:true},
             include: {
                 model: Role
             }
         });
+        
 
         if (!users || users.length === 0) {
             return res.status(404).json({ message: "No se encontraron usuarios" });
         }
+
         return res.status(200).json(users);
 
     } catch (error) {
@@ -151,7 +155,6 @@ export const deleteUser = async (req, res) => {
 };
 
 //cambiar role del usuario 
-
 export const changeUserRole = async (req, res) => {
     try {
         const { id } = req.params; // El ID del usuario que viene en la URL
@@ -201,8 +204,10 @@ export const changeUserRole = async (req, res) => {
 export const changeUserPassword = async (req, res) => {
     try {
         const { id } = req.params; // ID del usuario a modificar
-        const { newPassword } = req.body;
-        const result = validateOnlyPassword(newPassword)
+            
+        const { newPw } = req.body;
+
+        const result = validateOnlyPassword(newPw)
         console.log(result);
         
         if (result.error) {
@@ -218,7 +223,7 @@ export const changeUserPassword = async (req, res) => {
         // 3. Encriptar la nueva contraseña de forma segura
         const saltRound = 10;
         const salt = await bcrypt.genSalt(saltRound);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        const hashedPassword = await bcrypt.hash(newPw, salt);
 
         // 4. Actualizar contraseña y la fecha de modificación
         user.password = hashedPassword;
@@ -229,7 +234,7 @@ export const changeUserPassword = async (req, res) => {
         return res.status(200).json({ message: "Contraseña actualizada exitosamente por el administrador." });
 
     } catch (error) {
-        console.error("Error en adminChangePassword:", error);
+        console.error("Error en changeUserPassword:", error);
         return res.status(500).json({ message: "Ocurrió un error al cambiar la contraseña", error: error.message });
     }
 };
