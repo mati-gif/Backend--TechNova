@@ -89,18 +89,19 @@ export const validateRegisterUser = (req) => {
 
 
 //validate password (solo para el superadmin)
-export const validateOnlyPassword = (newPassword) => {
+export const validateOnlyPassword = (newPw) => {
     const result = {
         error: false,
         message: ''
     }
     
+console.log("la nueva contraseña es : ",newPw);
 
-    if (!newPassword || !validatePassword(newPassword, 7, null, true, true)) {
+    if (!newPw || !validatePassword(newPw, 7, null, true, true)) {
 
         return {
             error: true,
-            message: "La contraseña debe tener al menos 7 caracteres, una mayúscula y un número."
+            message: "La contraseña debe tener al menos 7 caracteres, una mayúscula y un número o puede estar vacia."
         }
     }
     return result;
