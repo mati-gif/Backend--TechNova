@@ -42,7 +42,15 @@ export const Order = sequelize.define("order", {
         type: DataTypes.ENUM("PENDIENTE", "COMPLETADA", "RECHAZADA"),
         allowNull: false,
         defaultValue: "PENDIENTE",
+    },
+    creationDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
+    modificationDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
     }
 }, {
-    timestamps: true // Con esto Sequelize crea automáticamente createdAt (fecha de compra)
+    timestamps: false // Con esto Sequelize crea automáticamente createdAt (fecha de compra)
 });

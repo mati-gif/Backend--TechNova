@@ -5,6 +5,7 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { NOW } from "sequelize";
 import { validateEmail } from "../helpers/validateEmail.js"
+import { Order } from "../models/Order/Order.js";
 
 export const registerUser = async (req, res) => {
 
@@ -238,3 +239,27 @@ export const changeUserPassword = async (req, res) => {
         return res.status(500).json({ message: "Ocurrió un error al cambiar la contraseña", error: error.message });
     }
 };
+
+export const findUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const user = await User.findByPk(id,{
+            include:[{
+                model:Order
+            }]
+        });
+
+        if (!user) {
+            console.log(`no se encontro el usuario con el id ${id}`);
+
+            return res.status(404).send({ message: "No se encontro el usuario solicitado" })
+        }
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).send({ message: "Ocurrio un error al traer los productos" })
+    }
+}
