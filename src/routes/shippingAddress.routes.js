@@ -8,6 +8,6 @@ const router = Router();
 
 router.get("/shippingAddress/all",verifyToken,getAllShippingAddresses)
 router.get(`/shippingAddress/:id`,verifyToken,getShippingAddressById)
-router.post("/shippingAddress/create",verifyToken,createShippingAddress)
+router.post("/shippingAddress/create/:userId",verifyToken,createShippingAddress)
 router.get(`/shippingAddress/user/:userId`,verifyToken,getShippingAddressesByUserId)
 export default router;

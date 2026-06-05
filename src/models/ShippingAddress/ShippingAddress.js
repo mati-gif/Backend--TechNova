@@ -20,7 +20,7 @@ export const ShippingAddress = sequelize.define("shippingAddress", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    state: {
+    province: {
         type: DataTypes.STRING,
         allowNull: false,
     },

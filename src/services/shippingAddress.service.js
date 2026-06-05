@@ -61,8 +61,9 @@ export const getShippingAddressById = async (req, res) => {
 // 3. Crear una nueva dirección (validando antes que el usuario exista y esté activo)
 export const createShippingAddress = async (req, res) => {
     try {
+        //agregar metodo para validar campos 
         const address = req.body;
-        const {userId} = req.body
+        const {userId} = req.params
 
         // Verificamos al usuario antes de crear
         const user = await User.findOne({ where: { id: userId, active: true } });
