@@ -1,6 +1,8 @@
 import { Order } from "../models/Order/Order.js";
 import { User } from "../models/User/User.js";
 import { ShippingAddress } from "../models/ShippingAddress/ShippingAddress.js";
+import { Product } from "../models/Product/Product.js";
+import { OrderProduct } from "../models/OrderProduct/OrderProduct.js";
 
 
 // 1. Crear una orden
@@ -20,12 +22,23 @@ export const createOrder = async (req, res) => {
         const address = await ShippingAddress.findByPk(shippingAddressId);
         if (!address) return res.status(404).json({ message: "Dirección no válida" });
 
-        const newOrder = await Order.create({ 
-            userId, 
+
+        const lastOrder = await Order.findOne({
+            order: [["id", "DESC"]]
+        });
+
+        const nextNumber = lastOrder ? lastOrder.id + 1 : 1;
+
+        const orderCode =
+            `TN-${new Date().getFullYear()}-${String(nextNumber).padStart(3, "0")}`;
+
+        const newOrder = await Order.create({
+            userId,
             shippingAddressId,
+            orderCode,
             creationDate: new Date(),
             modificationDate: new Date(),
-            ...orderData 
+            ...orderData
         });
 
         res.status(201).json({ message: "Orden creada con éxito", order: newOrder });
@@ -41,7 +54,7 @@ export const getAllOrders = async (req, res) => {
             {
                 include: [{
                     model: User,
-                    attributes: ['id', 'active','name','email'],
+                    attributes: ['id', 'active', 'name', 'email'],
                     where: { active: true } // Si el usuario no está activo, la consulta fallará o no traerá nada
                 }]
             });
@@ -57,25 +70,42 @@ export const getAllOrders = async (req, res) => {
 // 3. Traer órdenes por userId (solo si el usuario está activo)
 export const getOrdersByUserId = async (req, res) => {
     try {
+
         const { userId } = req.params;
+
         const orders = await Order.findAll({
             where: { userId },
-            include: [{
-                model: User,
-                attributes: ['id', 'active','name','email'],
-                where: { active: true } // Si el usuario no está activo, la consulta fallará o no traerá nada
-            }]
+
+            include: [
+                {
+                    model: User,
+                    attributes: ["id", "name", "email"]
+                },
+                {
+                    model: ShippingAddress
+                },
+                {
+                    model: Product,
+                    through: {
+                        attributes: [
+                            "quantity",
+                            "priceAtPurchase"
+                        ]
+                    }
+                }
+            ]
         });
-        if (!orders || []) {
-            return res.status(404).json({ message: "No se encontraron pedidos " })
-        }
 
         res.status(200).json({
-            message: `Listado de pedidos para el usuario ${User.name}`,
-            orders: orders
+            orders
         });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+
+        res.status(500).json({
+            message: error.message
+        });
+
     }
 };
 
@@ -83,18 +113,18 @@ export const getOrdersByUserId = async (req, res) => {
 export const getOrderById = async (req, res) => {
     try {
         const { id } = req.params;
-        const order = await Order.findByPk(id,{ 
+        const order = await Order.findByPk(id, {
             include: [{
                 model: User,
-                attributes: ['id', 'active','name','email'],
+                attributes: ['id', 'active', 'name', 'email'],
                 where: { active: true } // Si el usuario no está activo, la consulta fallará o no traerá nada
-            }] 
+            }]
 
-            });
-        
+        });
+
         if (!order || {}) return res.status(404).json({ message: "Orden no encontrada o usuario inactivo" });
-        
-        res.status(200).json({message:"La orden encontrada es ",order});
+
+        res.status(200).json({ message: "La orden encontrada es ", order });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

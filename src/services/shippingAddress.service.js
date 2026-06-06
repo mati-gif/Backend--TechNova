@@ -111,8 +111,8 @@ export const createShippingAddress = async (req, res) => {
     }
 };
 
-//4. Buscar todas las direcciones activas de un usuario específico
-export const getShippingAddressesByUserId = async (req, res) => {
+//4. Buscar todas las direcciones activas e inactivas de un usuario específico
+export const getAllShippingAddressesByUserId = async (req, res) => {
     try {
         const userId = req.user.id; //lo saca del token 
 
@@ -120,8 +120,7 @@ export const getShippingAddressesByUserId = async (req, res) => {
         // También incluimos el usuario para verificar que esté activo
         const addresses = await ShippingAddress.findAll({
             where: {
-                userId: userId,
-                active: true
+                userId: userId
             },
             include: [{
                 model: User,
@@ -135,7 +134,7 @@ export const getShippingAddressesByUserId = async (req, res) => {
         }
 
         res.status(200).json({
-            message: "Direccion encontrada con exito",
+            message: "Direcciones encontradas con exito",
             addresses: addresses
         });
     } catch (error) {
@@ -143,38 +142,44 @@ export const getShippingAddressesByUserId = async (req, res) => {
     }
 };
 
-//5.Desactiva una direccion del  usuario logueado (solo lo puede hacer el mismo usuario logueado)
-export const deleteShippingAddress = async (req, res) => {
+//5.Desactiva o activa una direccion del  usuario logueado (solo lo puede hacer el mismo usuario logueado)
+// Alterna (activa/desactiva) una dirección del usuario logueado dinámicamente
+export const toggleShippingAddressStatus = async (req, res) => {
     try {
-        const { addressId } = req.params;
+        const { id } = req.params;
 
-        const userId = req.user.id;//Se obtiene gracias al token
+        console.log(id);
+        
+        const userId = req.user.id; // Se obtiene gracias al token
 
+        // Buscamos la dirección asegurándonos de que pertenezca al usuario logueado
         const address = await ShippingAddress.findOne({
             where: {
-                id: addressId,
+                id: id,
                 userId
             }
         });
 
+        // Si no existe o no le pertenece a este usuario
         if (!address) {
             return res.status(404).json({
                 message: "Dirección no encontrada"
             });
         }
 
-        if (!address.active) {
-            return res.status(400).json({
-                message: "La direccion solicitada ya se encuentra desactivada"
-            });
-        }
+        // Guardamos el nuevo estado (el opuesto al que tiene actualmente)
+        const newStatus = !address.active;
 
+        // Actualizamos la dirección con su nuevo estado inverso
         await address.update({
-            active: !address.active
+            active: newStatus
         });
 
+        // Personalizamos dinámicamente el mensaje de respuesta para el usuario
+        const actionMessage = newStatus ? "activada" : "desactivada";
+
         return res.status(200).json({
-            message: "Dirección actualizada correctamente",
+            message: `Dirección ${actionMessage} correctamente`,
             address
         });
 
