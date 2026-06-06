@@ -31,6 +31,10 @@ export const ShippingAddress = sequelize.define("shippingAddress", {
     phone: {
         type: DataTypes.STRING,
         allowNull: false,
+    },    
+    active:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:true
     }
 }, {
     timestamps: false
