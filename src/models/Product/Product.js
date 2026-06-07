@@ -32,10 +32,6 @@ export const Product = sequelize.define("product", {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: true,
     },
-    category: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
     subcategory: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -74,6 +70,10 @@ export const Product = sequelize.define("product", {
         set(value) {
             this.setDataValue('features', JSON.stringify(value));
         }
+    },
+    isActive:{
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
     }
 }, {
     timestamps: false
