@@ -13,6 +13,8 @@ export const validateEmail = (email) => {
 }
 
 export const validatePassword = (password, minLength, maxLength, needsUppercase, needsNumber) => {
+    if (!password) return false;
+
     if (minLength && password.length < minLength)
         return false;
 
