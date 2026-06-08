@@ -129,3 +129,38 @@ export const getOrderById = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+//Obtener todo el historial de ornedes de un usuario especifico
+export const getOrdersHistoryByUserId = async (req,res) => {
+
+    const { userId } = req.params;
+
+    const orders = await Order.findAll({
+        where:{ userId },
+
+        include:[
+            {
+                model: ShippingAddress
+            },
+            {
+                model: Product,
+                through:{
+                    attributes:[
+                        "quantity",
+                        "priceAtPurchase"
+                    ]
+                }
+            }
+        ]
+    });
+
+    if(!orders){
+        return res.status(404).json({
+            message:"No se puede mostrar el historial de pedidos"
+        })
+    }
+
+    return res.status(200).json({
+        orders
+    });
+};
