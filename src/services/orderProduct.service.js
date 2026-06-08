@@ -8,12 +8,12 @@ export const createOrderProduct = async (req, res) => {
     try {
         const { orderId, productId, quantity, priceAtPurchase } = req.body;
 
-        if(quantity <= 0 ){
-            return res.status(404).json({message:"La cantidad es menor o igual a 0,ingrese una cantidad valida"})
+        if (quantity <= 0) {
+            return res.status(404).json({ message: "La cantidad es menor o igual a 0,ingrese una cantidad valida" })
         }
 
-        if(priceAtPurchase < 0){
-            return res.status(404).json({message:"El precio no puede ser menor a 0"})
+        if (priceAtPurchase < 0) {
+            return res.status(404).json({ message: "El precio no puede ser menor a 0" })
         }
         // Validar que la orden exista
         const order = await Order.findByPk(orderId);
@@ -23,12 +23,22 @@ export const createOrderProduct = async (req, res) => {
         const product = await Product.findByPk(productId);
         if (!product) return res.status(404).json({ message: "Producto no encontrado" });
 
+        if (product.stock < quantity) {
+            return res.status(400).json({
+                message: "Stock insuficiente"
+            });
+        }
+
         // Crear la relación
         const newOrderProduct = await OrderProduct.create({
             orderId,
             productId,
             quantity,
             priceAtPurchase
+        });
+
+        await product.update({
+            stock: product.stock - quantity
         });
 
         res.status(201).json({ message: "Producto añadido a la orden con éxito", orderProduct: newOrderProduct });
@@ -61,11 +71,11 @@ export const getOrderProductById = async (req, res) => {
         const orderProduct = await OrderProduct.findByPk(id, {
             include: [Order, Product]
         });
-        
+
         if (!orderProduct || orderProducts.length === 0) {
             return res.status(404).json({ message: "Registro no encontrado" })
         };
-        
+
         res.status(200).json(orderProduct);
     } catch (error) {
         res.status(500).json({ message: error.message });
