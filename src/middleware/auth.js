@@ -24,18 +24,29 @@ export const verifyToken = (req, res, next) => {
 
 
 export const verifySuperAdmin = (req, res, next) => {
-    // 1. Verificamos que el usuario exista en la request (por si falló el verifyToken)
     if (!req.user) {
         return res.status(401).json({ message: "Acceso denegado. Usuario no autenticado." });
     }
 
-    // 2. Verificamos si su rol es "superadmin"
     if (req.user.role !== "superadmin") {
         return res.status(403).json({ 
             message: "Acceso prohibido. Se requieren permisos de Super Administrador." 
         });
     }
 
-    // 3. Si todo está bien, lo dejamos pasar al controlador
+    next();
+}
+
+export const verifyAdminOrSuperAdmin = (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({ message: "Acceso denegado. Usuario no autenticado." });
+    }
+
+    if (req.user.role !== "admin" && req.user.role !== "superadmin") {
+        return res.status(403).json({ 
+            message: "Acceso prohibido. Se requieren permisos de administrador o superadministrador." 
+        });
+    }
+
     next();
 }
