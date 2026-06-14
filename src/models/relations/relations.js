@@ -5,6 +5,7 @@ import { OrderProduct } from "../OrderProduct/OrderProduct.js";
 import { Product } from "../Product/Product.js";
 import { ShippingAddress } from "../ShippingAddress/ShippingAddress.js";
 import { Category } from "../Category/Category.js";
+import { ContactForm } from "../ContactForm/ContactForm.js";
 
 // 1. Relación: Roles y Usuarios (1 a N)
 // ==========================================

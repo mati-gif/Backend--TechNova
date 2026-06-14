@@ -7,6 +7,7 @@ import categoryRoutes from "./routes/category.routes.js"
 import shippingAddress from "./routes/shippingAddress.routes.js"
 import order from "./routes/order.routes.js"
 import  orderProduct  from "./routes/orderProduct.routes.js";
+import contactFormRoutes from "./routes/contactForm.routes.js";
 
 
 const app = express();
@@ -22,16 +23,18 @@ try{
         next();
     })
     
-    app.listen(port)
     app.use(productRoutes);
     app.use(userRoutes)
     app.use(categoryRoutes)
     app.use(shippingAddress)
     app.use(order)
     app.use(orderProduct)
+    app.use(contactFormRoutes);
     
-    console.log(`app escuchando el puerto ${port}`);
     await sequelize.sync();
+
+    app.listen(port)
+    console.log(`App escuchando en el puerto ${port}`);
 }catch(error){
 
         console.log("Hubo un error inicializando ");
