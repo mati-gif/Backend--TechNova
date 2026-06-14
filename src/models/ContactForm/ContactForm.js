@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../../../db.js";
 
 
-export const ContactForm = sequelize.define("ContactForm", {
+export const ContactForm = sequelize.define("contactForm", {
     id: { 
         type: DataTypes.INTEGER,
         primaryKey: true,
