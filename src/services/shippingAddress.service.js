@@ -1,5 +1,6 @@
 import { ShippingAddress } from "../models/ShippingAddress/ShippingAddress.js";
 import { User } from "../models/User/User.js";
+import { validateShippingAddress } from "../helpers/shippingAddressValidation.js";
 
 const MAX_ADDRESSES = 3;
 
@@ -65,7 +66,14 @@ export const getShippingAddressById = async (req, res) => {
 // 3. Crear una nueva dirección (validando antes que el usuario exista y esté activo)
 export const createShippingAddress = async (req, res) => {
     try {
-        //agregar metodo para validar campos 
+        
+        const validation = validateShippingAddress(req);
+
+    
+        if (validation.error) {
+            return res.status(400).json({ message: validation.message });
+        }
+
         const address = req.body;
         const { userId } = req.params
 
@@ -126,10 +134,10 @@ export const getAllShippingAddressesByUserId = async (req, res) => {
                 model: User,
                 attributes: ['id', 'active', 'name', 'email'],
             }],
-            
+
         });
 
-        if (addresses.length === 0 ) {
+        if (addresses.length === 0) {
             return res.status(404).json({ message: "No se encontraron direcciones para este usuario activo." });
         }
 
@@ -149,7 +157,7 @@ export const toggleShippingAddressStatus = async (req, res) => {
         const { id } = req.params;
 
         console.log(id);
-        
+
         const userId = req.user.id; // Se obtiene gracias al token
 
         // Buscamos la dirección asegurándonos de que pertenezca al usuario logueado

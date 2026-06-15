@@ -1,11 +1,11 @@
-import { validateProduct } from "../helpers/validateProduct.js";
+import { validateCreateProduct,validateUpdateProduct } from "../helpers/validateProduct.js";
 import { Product } from "../models/Product/Product.js"
 
 export const retrieveAllProducts = async (req, res) => {
 
     try {
         const products = await Product.findAll({
-            where:{IsActive:true},
+            where: { IsActive: true },
         });
 
         if (!products || products.length === 0) {
@@ -46,7 +46,15 @@ export const createNewProduct = async (req, res) => {
 
     try {
 
-        //agregar metodo para validar los campos que vienen en el req (campos vacios o nulos)
+        // 1. Ejecutamos la validación pasándole el req
+        const validation = validateCreateProduct(req);
+            console.log(validation.message);
+            
+        // Si hay algún error, frena la ejecución y avisa al Frontend
+        if (validation.error) {
+            return res.status(400).json({ message: validation.message });
+        }
+
         const product = req.body;
 
         const existProduct = await Product.findOne({
@@ -59,8 +67,8 @@ export const createNewProduct = async (req, res) => {
             const newProduct = await Product.create(product);
 
             return res.status(201).json({
-                message:`¡Producto ${newProduct.name} procesado correctamente!`,
-                product:newProduct.id
+                message: `¡Producto ${newProduct.name} procesado correctamente!`,
+                product: newProduct.id
             });
         }
 
@@ -76,18 +84,19 @@ export const createNewProduct = async (req, res) => {
                 product: existProduct
             });
         }
-        console.log(typeof  existProduct.stock);
-        console.log(typeof  product.stock);
+        console.log(typeof existProduct.stock);
+        console.log(typeof product.stock);
 
-        
+
         //Existe y esta activo :Actualiza el stock
         existProduct.stock = existProduct.stock + product.stock;
 
         await existProduct.save();
 
         return res.status(200).json({
-            message:`¡El producto ${existProduct.name} ya existia , se incrementó una unidad el stock!`,
-            existProduct});
+            message: `¡El producto ${existProduct.name} ya existia , se incrementó una unidad el stock!`,
+            existProduct
+        });
 
     } catch (error) {
         console.error(error);
@@ -98,16 +107,15 @@ export const createNewProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log("id del producto a actualizar ",id);
-        
+        console.log("id del producto a actualizar ", id);
+
         const dataToUpdate = req.body;
 
         //  Ejecutamos la validación
-        const errorMessage = validateProduct(req);
+        const validation = validateUpdateProduct(req);
 
-        //  Si errorMessage tiene un texto (no es null), frenamos el controlador acá
-        if (errorMessage) {
-            return res.status(400).json({ message: errorMessage });
+        if (validation.error) {
+            return res.status(400).json({ message: validation.message });
         }
 
         // 1. Buscamos si el producto existe
@@ -123,7 +131,7 @@ export const updateProduct = async (req, res) => {
         await product.update(dataToUpdate);
 
         console.log(`Producto con ID ${id} actualizado exitosamente`);
-        return res.status(200).json({message:`El producto ${product.name} fue actualizado con exito`,product:product.id});
+        return res.status(200).json({ message: `El producto ${product.name} fue actualizado con exito`, product: product.id });
 
     } catch (error) {
         console.error("Error en updateProduct:", error);

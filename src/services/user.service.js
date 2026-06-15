@@ -94,7 +94,6 @@ export const loginUser = async (req, res) => {
 
     const token = jwt.sign(payload, secretKey, { expiresIn: "1h" })
 
-    // return res.json({ token })
     return res.status(200).json({ message: "Usuario logueado exitosamente", token: token })
 
 
