@@ -13,6 +13,8 @@ export const validateEmail = (email) => {
 }
 
 export const validatePassword = (password, minLength, maxLength, needsUppercase, needsNumber) => {
+    if (!password) return false;
+
     if (minLength && password.length < minLength)
         return false;
 
@@ -83,4 +85,26 @@ export const validateRegisterUser = (req) => {
             message: "La contraseña debe tener al menos 7 caracteres, una mayúscula y un número."
         }
     }
+
+    return result;
+}
+
+
+//validate password (solo para el superadmin)
+export const validateOnlyPassword = (newPw) => {
+    const result = {
+        error: false,
+        message: ''
+    }
+    
+console.log("la nueva contraseña es : ",newPw);
+
+    if (!newPw || !validatePassword(newPw, 7, null, true, true)) {
+
+        return {
+            error: true,
+            message: "La contraseña debe tener al menos 7 caracteres, una mayúscula y un número o puede estar vacia."
+        }
+    }
+    return result;
 }

@@ -20,6 +20,18 @@ export const User = sequelize.define("user", {
     password: {
         type: DataTypes.TEXT,
         allowNull: false
+    },
+    active:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:true
+    },
+    creationDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
+    modificationDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
     }
 }, {
     timestamps: false
