@@ -1,41 +1,29 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../../../db.js";
 
-export const User = sequelize.define(
-  "user",
+export const ContactForm = sequelize.define(
+  "contactForm",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
+    fullname: {
       type: DataTypes.STRING,
       allowNull: true,
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
-    password: {
+    message: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    creationDate: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    modificationDate: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
   },
   {
-    timestamps: false,
+    freezeTableName: true,
+    timestamps: true,
   },
 );
