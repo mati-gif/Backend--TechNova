@@ -5,7 +5,6 @@ import { retrieveAllCategories } from "../services/category.service.js";
 
 const router = Router();
 
-
-router.get("/category/all",retrieveAllCategories)
+router.get("/category/all", retrieveAllCategories);
 
 export default router;

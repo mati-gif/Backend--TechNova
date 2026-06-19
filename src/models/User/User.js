@@ -1,38 +1,41 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../../../db.js";
 
-
-export const User = sequelize.define("user", {
-    id: { 
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
+export const User = sequelize.define(
+  "user",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    name: { 
-        type: DataTypes.STRING,
-        allowNull: true
+    name: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
     },
     password: {
-        type: DataTypes.TEXT,
-        allowNull: false
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
-    active:{
-        type:DataTypes.BOOLEAN,
-        defaultValue:true
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
     creationDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
+      type: DataTypes.DATE,
+      allowNull: true,
     },
     modificationDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-    }
-}, {
-    timestamps: false
-});
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+  },
+  {
+    timestamps: false,
+  },
+);
